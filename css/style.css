@@ -1,0 +1,16 @@
+body {
+      background:grey;
+}
+
+#form_section {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+}
+#output li {
+      background: #ccc;
+}
+
+#canvas {
+      background-color: #fff;
+}

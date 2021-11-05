@@ -6,20 +6,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="./css/style.css">
+  
   <title>chat</title>
 </head>
 <body>
 
-  <form>
-    <fieldset>
-      <legend>チャット入力画面</legend>
-      <div>name: <input type="text" id="name" /></div>
-      <div>text: <input type="text" id="text" /></div>
-      <div>
-        <button type="button" id="send">send</button>
-      </div>
-    </fieldset>
-  </form>
+  <div id="form_section">
+
+    <form>
+      <fieldset>
+        <legend>ログイン画面</legend>
+        <div>email: <input type="email" id="email" /></div>
+        <div>password: <input type="password" id="password" /></div>
+        <div>
+          <button type="button" id="login">login</button>
+          <button type="button" id="add">add</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <form>
+      <fieldset>
+        <legend>チャット入力画面</legend>
+        <div>name: <input type="text" id="name" /></div>
+        <div>text: <input type="text" id="text" /></div>
+        <div>
+          <button type="button" id="send">send</button>
+        </div>
+      </fieldset>
+    </form>
+
+  </div>
+
+  <div id="canvas_section">
+    色選択<input type="color" id="color">
+    ペンの太さ<input type="range" id="line" min="1" max="50" value="5" step="1">
+    <button id="clear_btn">クリア</button>
+    <button id="image_send">送信</button><br>
+    <canvas id="canvas" width="600" height="400" style="border:1px solid #000;"></canvas>
+  </div>
+  
+  <!-- データ出力場所 -->
+  <ul id="output"></ul>
 
 
   <!-- jquery読み込み -->
@@ -37,52 +65,249 @@
       const s = _d.getSeconds().toString().padStart(2, '0');
       return `${Y}/${m}/${d} ${H}:${i}:${s}`;
     }
+    
   </script>
-
-
   <!-- firebaseのいろいろ読み込み -->
   <script type ="module">
   
   //Firebaceを利用するためのコード
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.2.0/firebase-app.js";
+
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/9.2.0/firebase-auth.js";
   
+  //バージョンを合わせる！
   //Firebaceの関数を利用するためのコード
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    serverTimestamp,
-    onSnapshot,
-    query,
-    orderBy,
-  } from "https://www.gstatic.com/firebasejs/9.2.0/firebase-firestore.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      serverTimestamp,
+      onSnapshot,
+      query,
+      orderBy,
+      deleteDoc,
+      doc,
+      
+    } from "https://www.gstatic.com/firebasejs/9.2.0/firebase-firestore.js";
+
 
 //自分のプロダクトを特定するためのコード
-  const firebaseConfig = {
+    const firebaseConfig = {
       
     };
-
-    const app = initializeApp(firebaseConfig);
+    
+    //Firebaceを利用するためのコード
+    const app = initializeApp(firebaseConfig);    
+    //datebaceを利用するためのコード
     const db = getFirestore(app);
+    //データを持ってくるときに時間の降順に並び替えるためのコード
+    const q = query(collection(db, "chat"), orderBy("time", "desc"));
 
-    $('#send').on('click', function () {//sendボタンが押されたら
-        console.log('click');//コンソールにクリックと表示
+    //入力されたテキストデータを送信する関数
+    function sendChatTextDate() {
         const data = {//データ送信用の変数
           name: $("#name").val(),//name欄に入力されたもの
           text: $("#text").val(),//text欄に入力されたもの
+          img:"",
           time: serverTimestamp(),//現在時間
         };
         addDoc(collection(db, "chat"), data);//Firebaseのchatコレクションにデータを送る
         $("#text").val("");//text欄は空欄に
+      }
+  //sendボタンが押されたら
+    $('#send').on('click', function () { //sendボタンが押されたら
+      console.log('click');//コンソールにクリックと表示
+      sendChatTextDate();//テキストデータを送信する関数を実行
+    });
+
+  //キーが押されたら発動
+    $("#text").on("keydown", function (e) {//キーが押されたら発動
+      if (e.keyCode === 13) { //エンターキーだった場合は、
+        sendChatTextDate(); //テキストデータを送信する関数を実行
+      }
+    });
+
+    //チャットデータ読み込み
+    onSnapshot(q, (querySnapshot) => {
+      //データの変更が発生したタイミングで発動(読み込んだときも発動)
+      //console.log(querySnapshot.docs);//取ってきたデータをコンソールに出す（情報たくさん）
+
+      const dataArray = [];//必要なデータだけを入れるための配列を準備
+      //docs（情報たくさん）に対して繰り返し処理
+      querySnapshot.docs.forEach(function (doc) {
+      //docに入れて必要なデータを取る
+        const data = {
+          id: doc.id,//idを取る（自動生成されるやつ）
+          data: doc.data(),//dataを取る（ボタンを押してサーバーに保存したやつ）
+        };
+
+        dataArray.push(data); //オブジェクトにして配列にいれる
       });
 
+      //必要なものだけ入れたオブジェクトができた！(dateArray)
+      console.log(dataArray);//コンソールに出す
+      //表示するためにhtmlコードにしよう！
+      const tagArray = [];//htmlタグをつけるための配列を準備
 
-  </script>
+      //dataをいれた配列に対して繰り返し処理
+      dataArray.forEach(function (data) {
+      //dateArrayに入れてタグを付けたものをtagArrayに入れる！
+      //console.log(convertFromFirestoreTimestampToDatetime(data.data.time.seconds));
+      tagArray.push(`
+        <li id="${data.id}">
+          <p>${data.data.name} at ${convertFromFirestoreTimestampToDatetime(data.data.time.seconds)}</p>
+          <p>${data.data.text}</p>
+          <img src =${data.data.img}>         
+          <button class="close">削除</button>
+        </li>
+      `);
+        });//dataArray.forEachここまで
 
-  <!-- <script type ="module" src="./js.main.js"></script> -->
-  
-  
-  
+      //タグを付けたものをhtml化する！
+      $("#output").html(tagArray);
+    });//onSnapshotここまで
 
+    
+    // $('#add').on('click',function(){
+    //   console.log('click');
+    //   let email = $('#email').val();
+    //   let password = $('#password').val();
+
+    //   console.log(email);
+    //   console.log(password);
+      
+    //   const auth = getAuth();
+    //   createUserWithEmailAndPassword(email, password)
+    //     .then((userCredential) => {
+    //       // Signed in
+    //       console.log('signed');
+    //       const user = userCredential.user;
+    //       // ...
+    //     })
+    //     .catch((error) => {
+    //       const errorCode = error.code;
+    //       const errorMessage = error.message;
+    //       console.log(errorMessage);
+    //       console.log(error.code);
+    // });
+
+    // $('#login').on('click',function(){
+    //   console.log('click');
+    //   let email = $('#email').val();
+    //   let password = $('#password').val();
+
+    //   console.log(email);
+    //   console.log(password);
+      
+
+    //   signInWithEmailAndPassword(email, password)
+    //     .then((userCredential) => {
+    //       // Signed in
+    //       const user = userCredential.user;
+    //       // ...
+    //     })
+    //     .catch((error) => {
+    //       const errorCode = error.code;
+    //       const errorMessage = error.message;
+    //       console.log(errorMessage);
+    //     });
+
+    // });
+
+    $('body').on('click','.close',function(e){
+      console.log('click');
+      //console.log(originalEvent.path[1]);
+      
+      //console.log(doc.id);
+      //await deleteDoc(doc(db, "chat",""));
+    });
+
+    //canvasについての記述
+
+    let canvas_mouse_event = false; //スイッチ[ true=線を引く、false=線は引かない]
+      let oldX = 0; //一つ前の座標を代入するための変数
+      let oldY = 0; //一つ前の座標を代入するための変数
+      let bold_line = 5; //ラインの太さをここで指定
+      let color = "#000"; //ラインの太さをここで指定
+
+      const can = $('#canvas')[0]; //キャンバスそのものを変数
+      const ctx = can.getContext("2d"); //canに対してgetContext関数を実行し書き込み権限を与える
+
+      $(can).on("mousedown", function (e) {
+        console.log('on');
+          oldX = e.offsetX; 
+          oldY = e.offsetY;
+          canvas_mouse_event = true;
+        });
+    
+
+        $(can).on("mousemove", function (e) {
+          
+        if (canvas_mouse_event === true) {
+
+              const px = e.offsetX;//時点の座標
+              const py = e.offsetY; //時点の座標
+              ctx.strokeStyle = color; //色
+              ctx.lineWidth = bold_line; //大きさ
+              ctx.lineJoin = "round";
+              ctx.lineCap = "round";//ペン先を丸く
+              ctx.beginPath();//パスの開始
+              ctx.moveTo(oldX, oldY);
+              ctx.lineTo(px, py);
+              ctx.stroke();//出発地点から現時点の線を描写
+              oldX = px; //出発地点の入れ替え
+              oldY = py; //出発地点の入れ替え
+            }
+          });
+
+          $(can).on("mouseup", function (e) {
+            canvas_mouse_event = false;//ボタンを上げたら
+          });
+
+          $(can).mouseleave(function () {
+              canvas_mouse_event = false;
+          });
+
+          $('#clear_btn').on("click", function () {
+            ctx.closePath();
+            ctx.clearRect(0, 0, can.width, can.height);//canvasをクリア
+          })
+
+
+          //パスの開始
+          ctx.beginPath();
+
+          //色変更
+          $('#color').on('change', function () {
+              let sel_color = $('#color').val();
+              console.log(sel_color);
+              color = sel_color;
+            })
+
+          //ラインを変更
+          $('#line').on('change', function () {
+              let line = $('#line').val();
+              console.log(line);
+              console.log('change');
+              bold_line = line;
+            })
+
+            //画像を送信
+            $('#image_send').on('click',function(){
+              console.log('click');
+              const img_data = canvas.toDataURL("image/jpg");
+              
+              const data = {//データ送信用の変数
+                name:"",
+                text:"",
+                img: img_data,//name欄に入力されたもの                
+                time: serverTimestamp(),//現在時間
+              };
+              addDoc(collection(db, "chat"), data);//Firebaseのchatコレクションにデータを送る
+              ctx.closePath();
+              ctx.clearRect(0, 0, can.width, can.height);
+            });
+    
+  </script>  
 </body>
 </html>
