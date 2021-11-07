@@ -10,20 +10,47 @@
   <title>chat</title>
 </head>
 <body>
+  <h1>DIVER'S LOG</h1>
+  <h2>ユーザー:<span id="login_user"></span></h2>
 
   <div id="form_section">
 
     <form>
       <fieldset>
-        <legend>ログイン画面</legend>
-        <div>email: <input type="email" id="email" /></div>
-        <div>password: <input type="password" id="password" /></div>
+        <legend>新規登録画面</legend>
+        <div>email: <input type="email" id="new_email" /></div>
+        <div>password: <input type="password" id="new_password" /></div>
         <div>
-          <button type="button" id="login">login</button>
-          <button type="button" id="add">add</button>
+          <button type="button" id="signin_btn">signin</button>
         </div>
       </fieldset>
     </form>
+
+    <form>
+      <fieldset>
+        <legend>ログイン画面</legend>
+        <div>email: <input type="email" id="login_email" /></div>
+        <div>password: <input type="password" id="login_password" /></div>
+        <div>
+          <button type="button" id="login_btn">login</button>
+          <button type="button" id="logout_btn">logout</button>
+        </div>
+      </fieldset>
+    </form>
+
+    <div>
+      <fieldset>
+        <legend>ユーザー情報登録</legend>
+        <div>name: <input type="text" id="user_name" /></div>
+        <div>image: <input type="file" id="user_img" accept=".png, .jpeg, .jpg" required/></div>
+        <button id ="upload">upload</button>
+        <img src="https://via.placeholder.com/150" id="sel_img">
+        <div>
+          <button type="button" id="set_btn">set</button>
+          
+        </div>
+      </fieldset>
+    </div>
 
     <form>
       <fieldset>
@@ -68,16 +95,24 @@
     
   </script>
   <!-- firebaseのいろいろ読み込み -->
-  <script type ="module">
+  <script type ="module">//バージョンを合わせる！
   
   //Firebaceを利用するためのコード
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.2.0/firebase-app.js";
-
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword} from "https://www.gstatic.com/firebasejs/9.2.0/firebase-auth.js";
   
-  //バージョンを合わせる！
+  //firebase-authを利用するためのコード
+  import {  
+        getAuth, 
+        createUserWithEmailAndPassword, 
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged,
+        updateProfile,
+      
+    } from "https://www.gstatic.com/firebasejs/9.2.0/firebase-auth.js";
+  
   //Firebaceの関数を利用するためのコード
-    import {
+  import {
       getFirestore,
       collection,
       addDoc,
@@ -90,6 +125,13 @@
       
     } from "https://www.gstatic.com/firebasejs/9.2.0/firebase-firestore.js";
 
+  //storegeを使うためのコード  
+  import { 
+      getStorage,
+      ref,
+      uploadBytes,
+    } from "https://www.gstatic.com/firebasejs/9.2.0/firebase-storage.js";
+
 
 //自分のプロダクトを特定するためのコード
     const firebaseConfig = {
@@ -100,8 +142,163 @@
     const app = initializeApp(firebaseConfig);    
     //datebaceを利用するためのコード
     const db = getFirestore(app);
+    //authenticationを利用するためのコード
+    const auth = getAuth(app);
+    //ログインしているユーザー確認
+    const user = auth.currentUser;
+
+    const storage = getStorage(app);
+    //const storage2 = getStorage(customApp, "gs://my-custom-bucket");
+
+
     //データを持ってくるときに時間の降順に並び替えるためのコード
     const q = query(collection(db, "chat"), orderBy("time", "desc"));
+
+//-------------ユーザーのログイン状態を確認する-------------------------------/////
+    //ログインしていないときはuserにnullを返す
+    if (user) {
+      //       
+      } else {
+        // No user is signed in.
+        //ログインしていないときはuserにnullを返す
+        console.log(user);
+        $('#login_user').text('null');
+      }
+
+
+//------------ユーザー新規登録-----------------------------------------------//////
+
+    $('#signin_btn').on('click',function(){ //signinボタンを押したら発動
+      const email = $('#new_email').val(); //new_emailの入力値を変数emailへ代入
+      const password = $('#new_password').val(); //new_passwordの入力値を変数passwordへ代入
+
+      createUserWithEmailAndPassword(auth, email, password)//ユーザ登録を実行
+          .then((userCredential) => { //成功したら
+            // Signed in
+            const user = userCredential.user;
+            console.log('created'); //コンソールにcreated
+            alert('登録完了しました');//アラートを出す
+            $('#new_email').val();//new_emailの入力欄を空に
+            $('#new_password').val(); //new_passwordの入力欄を空に
+
+            
+            // ...
+          })
+          .catch((error) => { //失敗したら
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(error.code + error.message);//コンソールにエラーを出す
+            // ..
+          });
+    });//signinボタンを押したら発動ここまで
+
+    //---------------------作成中---------------------------------------------//
+
+    //ユーザー情報登録
+
+    // $('#set_btn').on('click', function () {
+    //     console.log('click');
+    //     const name = $('#user_name').val();
+    //     const img = $('#user_img').val();
+
+    //     console.log(name);
+    //     console.log(img);
+    //     updateProfile(auth.currentUser, {
+    //       displayName: name, photoURL: img
+    //     }).then(() => {
+    //       // Profile updated!
+    //       // ...
+    //       console.log('sucsees');
+    //     }).catch((error) => {
+    //       // An error occurred
+    //       // 
+    //       console.log(error);
+    //     });
+
+
+//})
+
+//アップロードのボタンイベント
+$('#upload').on('click',function(){
+  const file = $('#user_img')[0].files[0];
+  if (!file) {
+    alert('ファイルが設定されていません');
+  }
+  
+  const user_pic = ref(storage, 'user/users.jpg');
+  uploadBytes(user_pic, file).then((snapshot) => {
+    console.log('Uploaded a blob or file!');
+  });
+
+
+});
+
+//---------ログイン-------------------------------------------------------------////
+
+    $('#login_btn').on('click',function(){ //logininボタンを押したら発動
+      const email = $('#login_email').val(); //login_emailの入力値を変数emailへ代入
+      const password = $('#login_password').val(); //login_passwordの入力値を変数passwordへ代入
+
+      signInWithEmailAndPassword(auth, email, password) //ログイン処理を実行
+          .then((userCredential) => { //成功したら
+            // Signed in
+            const user = userCredential.user;
+            console.log('login'); //コンソールにlogin！
+            alert('ログインしました');//アラートを出す
+            $('#login_email').val();//login_emailの入力欄を空に
+            $('#login_password').val();//login_passwordの入力欄を空に
+
+            onAuthStateChanged(auth, (user) => {
+              if (user) {
+                // User is signed in, see docs for a list of available properties
+                // https://firebase.google.com/docs/reference/js/firebase.User
+                const uid = user.uid;
+                console.log(uid);
+                $('#login_user').text(uid);
+                // ...
+              } else {
+                // User is signed out
+                // ...
+              }
+            });//onAuthStateChangedここまで
+
+            })
+
+            // ...
+          
+          .catch((error) => { //失敗したら
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(error.code + error.message);//コンソールにエラーを出す  
+          })
+
+          });//logininボタンを押したら発動ここまで
+
+//----------ログアウト----------------------------------------------------------//
+    $('#logout_btn').on('click', function () { //logoutボタンが押されたら
+      signOut(auth).then(() => {
+          // Sign-out successful.
+          console.log('logout');
+          alert("ログアウトしました");
+          //ユーザのログイン状態を確認
+          //ログインしていないときはuserにnullを返す
+            if (user) {
+              //       
+              } else {
+                // No user is signed in.
+                //ログインしていないときはuserにnullを返す
+                console.log(user);
+                $('#login_user').text('null');
+            }
+
+        }).catch((error) => { //失敗したら
+          // An error happened.
+          console.log(error); //コンソールにエラーを出す
+        });        
+    }); //logoutボタンが押されたらここまで
+
+
+
 
     //入力されたテキストデータを送信する関数
     function sendChatTextDate() {
@@ -115,13 +312,13 @@
         $("#text").val("");//text欄は空欄に
       }
   //sendボタンが押されたら
-    $('#send').on('click', function () { //sendボタンが押されたら
-      console.log('click');//コンソールにクリックと表示
+    $('#send').on('click', function () { //sendボタンが押されたら発動
+      //console.log('click');//コンソールにクリックと表示
       sendChatTextDate();//テキストデータを送信する関数を実行
     });
 
-  //キーが押されたら発動
-    $("#text").on("keydown", function (e) {//キーが押されたら発動
+  //キーが押されたら
+    $("#text").on("keydown", function (e) { //キーが押されたら発動
       if (e.keyCode === 13) { //エンターキーだった場合は、
         sendChatTextDate(); //テキストデータを送信する関数を実行
       }
@@ -168,59 +365,7 @@
     });//onSnapshotここまで
 
     
-    // $('#add').on('click',function(){
-    //   console.log('click');
-    //   let email = $('#email').val();
-    //   let password = $('#password').val();
-
-    //   console.log(email);
-    //   console.log(password);
-      
-    //   const auth = getAuth();
-    //   createUserWithEmailAndPassword(email, password)
-    //     .then((userCredential) => {
-    //       // Signed in
-    //       console.log('signed');
-    //       const user = userCredential.user;
-    //       // ...
-    //     })
-    //     .catch((error) => {
-    //       const errorCode = error.code;
-    //       const errorMessage = error.message;
-    //       console.log(errorMessage);
-    //       console.log(error.code);
-    // });
-
-    // $('#login').on('click',function(){
-    //   console.log('click');
-    //   let email = $('#email').val();
-    //   let password = $('#password').val();
-
-    //   console.log(email);
-    //   console.log(password);
-      
-
-    //   signInWithEmailAndPassword(email, password)
-    //     .then((userCredential) => {
-    //       // Signed in
-    //       const user = userCredential.user;
-    //       // ...
-    //     })
-    //     .catch((error) => {
-    //       const errorCode = error.code;
-    //       const errorMessage = error.message;
-    //       console.log(errorMessage);
-    //     });
-
-    // });
-
-    $('body').on('click','.close',function(e){
-      console.log('click');
-      //console.log(originalEvent.path[1]);
-      
-      //console.log(doc.id);
-      //await deleteDoc(doc(db, "chat",""));
-    });
+    
 
     //canvasについての記述
 
