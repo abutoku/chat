@@ -34,18 +34,18 @@
           <div  id="login_btn">ログイン</div>
         </div>
       </div>
-
+      
     </div>
   </div><!-- ログイン画面ここまで -->
-
+  
   <!-- 新規登録画面 -->
   <div id="signin_section" class="modal">
     <div id="signin_inner">
-
+      
       <div class="modal_btn">
         <div type="button" id="signin_close" class="modal_close far fa-window-close"></div>
       </div>
-
+      
       <div id="signin_main">
         <h2>アカウント登録</h2>
         <div>
@@ -57,24 +57,34 @@
           <p>メールアドレス</p>
           <input type="email" class="input_txt" id="new_email" />
         </div>
-
+        
         <div>
           <p>パスワード</p>
           <input type="password" class="input_txt" id="new_password" /></div>
-        <div>
-          <p>プロフィール画像</p>
-          <img id="sel_img">
-          <input type="file" id="user_img" accept=".png, .jpeg, .jpg" required />
+          <div>
+            <p>プロフィール画像</p>
+            <img id="sel_img">
+            <input type="file" id="user_img" accept=".png, .jpeg, .jpg" required />
+          </div>
+          
+          <div>
+            <div id="signin_btn">登録</div>
+          </div>
         </div>
-
-        <div>
-          <div id="signin_btn">登録</div>
+        
+      </div>    
+    </div><!-- 新規登録画面ここまで -->
+    
+    <!-- 記録が出る部分 -->
+    <div id="output_modal" class="modal">
+      <div id="info_inner">
+        <img id="output_img">
+        <div id="output_info">
+          <p id="output_txtarea"></p>
         </div>
       </div>
+    </div>
 
-    </div>    
-  </div><!-- 新規登録画面ここまで -->
-  
   <!-- トップ画面 -->
   <section id=top_section>
     <!-- 最初の画面 -->
@@ -103,29 +113,41 @@
     
     <!-- チャット入力画面 -->
     <div id ="chat_section">
-      <div>
-        <h2>入力画面</h2>
-        <div>
-          name: <input type="text" id="fish_name"/>
-          info: <textarea id="info" ></textarea>
+      <div id =wrapper>
+        <div id=input_area>
+
+          <div id="text_input">
+            <div>
+              <p>name</p>
+              <input type="text" id="fish_name" />
+            </div>
+            <div>
+              <p>info</p>
+              <textarea id="info"></textarea>
+            </div>
+          </div>
+          
+          
+          <div id="select_image">
+            <img src="img/write.jpg" id="preview">
+            <input type="file" id="fish_img">
+            <div id="send">send</div>
+          </div>
+          
+          <div id="canvas_contents"><!-- canvas入力画面 -->
+            色選択<input type="color" id="color">
+            ペンの太さ<input type="range" id="line" min="1" max="50" value="5" step="1">
+            <button id="clear_btn">クリア</button>
+            <canvas id="canvas" width="480" height="360" style="border:1px solid #000;"></canvas>
+          </div><!-- canvas入力画面ここまで -->
         </div>
-        <img src="img/write.jpg" id="preview">
-        <input type="file" id="fish_img">
-        <button type="button" id="send">send</button>
         
       </div>
-    </div><!-- チャット入力画面ここまで -->
-    
-    <!-- canvas入力画面 -->
-    <div id="canvas_section">
-      色選択<input type="color" id="color">
-      ペンの太さ<input type="range" id="line" min="1" max="50" value="5" step="1">
-      <button id="clear_btn">クリア</button>
-      <button id="image_send">送信</button><br>
-      <canvas id="canvas" width="600" height="400" style="border:1px solid #000;"></canvas>
-    </div><!-- canvas入力画面ここまで -->
-    
+    </div><!-- 入力画面ここまで -->
+      
     <!-- チャットデータ出力場所 -->
+    
+
     <div id="output"></div>
 
 
@@ -133,6 +155,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
   <script>
+    'use strict'
     // 日時をいい感じの形式にする関数(Timestamp);
     function convertFromFirestoreTimestampToDatetime(timestamp) {
       const _d = timestamp ? new Date(timestamp * 1000) : new Date();
@@ -155,10 +178,11 @@
     // 画面の初期設定
     $('#login_section').hide();//ログイン入力フォームを消す
     $('#signin_section').hide();//新規登録入力フォームを消す
-    $('#header_section').hide();//ヘッダー部分消す
-    $('#chat_section').hide();//チャット入力消す
-    $('#canvas_section').hide();//canvas入力消す
-    //$('#top_section').hide();
+    //$('#header_section').hide();//ヘッダー部分消す
+    //$('#chat_section').hide();//チャット入力消す
+    //$('#canvas_section').hide();//canvas入力消す
+    $('#output_modal').hide();//canvas入力消す
+    $('#top_section').hide();
 
     //トップ画面のログインが押されたら
     $('#top_login').on('click',function(){
@@ -179,6 +203,11 @@
       $('#signin_close').on('click', function () {
         $('#signin_section').hide();//新規登録入力フォームを消す
       });
+
+    //魚情報を消す
+    $('#output_modal').on('click',function(){
+      $('#output_modal').fadeOut(1000);
+    })
 
     //プロフィール写真が選択されたらプレビューを表示
       $('#user_img').on('change', function (e) {
@@ -203,6 +232,7 @@
 
   <!-- firebaseのいろいろ読み込み -->
   <script type ="module">//バージョンを合わせる！
+  'use strict'
   
   //Firebaceを利用するためのコード
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.2.0/firebase-app.js";
@@ -227,6 +257,7 @@
       onSnapshot,
       query,
       orderBy,
+      getDoc,
       deleteDoc,
       doc,
       
@@ -418,12 +449,13 @@
         uploadBytes(fish_pic, file).then((snapshot) => { //登録処理実行
             console.log('Uploaded a blob or file!'); //アップロード成功！
           });
-
+        
         const data = {//データ送信用の変数
+            uid:`${uid}`,
             name: $("#fish_name").val(),//name欄に入力されたもの
             info: $("#info").val(),//text欄に入力されたもの
             map: "",
-            img: `user/${uid}/${nowTime}.jpg`.jpg,//登録した画像のパスを登録
+            img: `user/${uid}/${nowTime}.jpg`,//登録した画像のパスを登録
             time: serverTimestamp(),//現在時間
           };
         addDoc(collection(db, "fish"), data);//Firebaseのchatコレクションにデータを送る
@@ -457,10 +489,8 @@
     //チャットデータ読み込み
     onSnapshot(q, (querySnapshot) => {
     //データの変更が発生したタイミングで発動(読み込んだときも発動)
-    console.log(querySnapshot.docs);//取ってきたデータをコンソールに出す（情報たくさん）
-
+    //console.log(querySnapshot.docs);//取ってきたデータをコンソールに出す（情報たくさん）
     const dataArray = [];//必要なデータだけを入れるための配列を準備
-
     //docs（情報たくさん）に対して繰り返し処理
     querySnapshot.docs.forEach(function (doc) {
     //docに入れて必要なデータを取る
@@ -468,31 +498,66 @@
     id: doc.id,//idを取る（自動生成されるやつ）
     data: doc.data(),//dataを取る（ボタンを押してサーバーに保存したやつ）
     };
-
     dataArray.push(data); //オブジェクトにして配列にいれる
-    });
+    });//querySnapshot.docs.forEachここまで
 
     //必要なものだけ入れたオブジェクトができた！(dateArray)
     console.log(dataArray);//コンソールに出す
+    
+    
     //表示するためにhtmlコードにしよう！
     const tagArray = [];//htmlタグをつけるための配列を準備
-
-    
 
     //dataをいれた配列に対して繰り返し処理
     dataArray.forEach(function (data) {
     //dateArrayに入れてタグを付けたものをtagArrayに入れる！
         //console.log(convertFromFirestoreTimestampToDatetime(data.data.time.seconds));
+        //const img_path = ref(storage, `${data.data.img}`);
         tagArray.push(`
             <div class="log_contents" id="${data.id}">
-              <p id="contents_title">${data.data.name}</p>      
-              <p>${convertFromFirestoreTimestampToDatetime(data.data.time.seconds)}</p>         
+              <h1 class="log_header">${data.data.name}</h1>
+              <p>${convertFromFirestoreTimestampToDatetime(data.data.time?.seconds)}</p>             
             </div>
-          `);          
+          `);
         });//dataArray.forEachここまで
-
+      
     //タグを付けたものをhtml化する！
     $("#output").html(tagArray);
+
+    
+    $('.log_header').on('click',async function(){
+      const did = $(this).parent().attr("id");
+      console.log(did);
+      
+      const docRef = doc(db, "fish", `${did}`);
+      const docSnap =  await getDoc(docRef);
+  
+        if (docSnap.exists()) {
+          // console.log("fish[0].data", docSnap.data());
+          const fish = docSnap.data();
+          $('#output_txtarea').text(fish.info);
+          
+          getDownloadURL(ref(storage, `${fish.img}`))//プロフィール写真のパスからurlを取得
+            .then((url) => {
+              console.log(url); //プロフィール写真のurlを確認
+              // Or inserted into an <img> element                   
+              const img = document.getElementById('output_img');//プロフィール写真の表示場所を変数で指定
+              img.setAttribute('src', url);//プロフィール写真の表示場所のsrc属性にurlを指定
+            })
+            .catch((error) => {//失敗したら
+              // Handle any errors
+              console.log(error);//コンソールにエラーを出す
+            });
+          
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+      
+      
+        $('#output_modal').fadeIn(1500);
+      
+    })
 
     });//onSnapshotここまで
 

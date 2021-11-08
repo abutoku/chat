@@ -168,12 +168,85 @@ body {
       border: 1px dotted gray;
 }
 
+/* 入力画面 */
+#input_area {
+      display: flex;
+}
+#wrapper {
+      width: 90%;
+      margin: 0 auto;
+}
 
+#text_input {
+      margin: 8px;
+}
+#text_input input {
+      width: 240px;
+      height: 36px;
+      font-size: 20px;
+}
 
-#output li {
-      background: #ccc;
+#text_input textarea {
+      width: 240px;
+      height: 200px;
+      font-size: 12px;
+}
+
+#select_image {
+      margin: 30px;
+}
+
+#send {
+      margin-top: 24px;
+      width: 180px;
+      height: 56px;
+      background-color: grey;
+      color: #fff;
+      font-size: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 10px;
+      box-shadow: 3px 3px #636363;
 }
 
 #canvas {
-      background-color: #fff;
+      background-image: url(../img/map.jpg);
+}
+
+#output {
+      margin-top: 60px;
+      margin-left: 36px;
+      
+}
+
+.log_contents {
+      margin-bottom: 24px;
+      width: 400px;
+      background-color: darkgray;
+}
+
+#info_inner {
+      background: #fff;
+      width: 800px;
+      height: 400px;
+      margin: 120px auto;
+      padding: 12px;
+      display: flex;     
+}
+
+#output_img,
+#output_info {
+      width: 50%;
+}
+
+#output_img  {
+      object-fit: cover;
+}
+
+#output_info  {      
+      display: flex;
+      justify-content: center;
+      align-items: center;
 }
