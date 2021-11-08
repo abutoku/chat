@@ -34,7 +34,7 @@
       <div>メールアドレス: <input type="email" id="new_email" /></div>
       <div>パスワード: <input type="password" id="new_password" /></div>
       <div>プロフィール画像: <input type="file" id="user_img" accept=".png, .jpeg, .jpg" required /></div>
-      <img src="https://via.placeholder.com/150" id="sel_img">
+      <img id="sel_img">
       <div>
         <button type="button" id="signin_btn">登録</button>
         <button type="button" id="signin_close">close</button>
@@ -45,7 +45,7 @@
   <!-- トップ画面 -->
   <section id=top_section>
     <!-- 最初の画面 -->
-    <h1>DIVER'S LOG</h1>
+    <h1>DIVER'S Log</h1>
     <div id ="toppage_btn">
       <div id="top_login">ログイン</div>
       <div id="top_signin">新規登録</div>
@@ -56,25 +56,32 @@
   <main>
     <section id="header_section">
       <header>
-        <h1>DIVER'S LOG</h1><!--タイトル-->
-        <h2 id="login_user"></h2> <!--ログインしたユーザー名が表示される場所-->
-        <img id="display_img"> <!--ログインしたユーザーのプロフィール写真が表示される場所-->
-        <button type="button" id="logout_btn">logout</button> <!--ログアウトボタン-->
+        <h1>Diver's Log</h1><!--タイトル-->
+        
+        <div id ="user_info">
+          <img id="display_img"> <!--ログインしたユーザーのプロフィール写真が表示される場所-->
+          <h2 id="login_user"></h2> <!--ログインしたユーザー名が表示される場所-->
+          <button type="button" id="logout_btn">logout</button> <!--ログアウトボタン-->
+        </div>
+
       </header>
     </section>
   </main>
     
     <!-- チャット入力画面 -->
-    <form id ="chat_section">
-      <fieldset>
-        <legend>チャット入力画面</legend>
-        <div>name: <input type="text" id="name" /></div>
-        <div>text: <input type="text" id="text" /></div>
+    <div id ="chat_section">
+      <div>
+        <h2>入力画面</h2>
         <div>
-          <button type="button" id="send">send</button>
+          name: <input type="text" id="fish_name"/>
+          info: <textarea id="info" ></textarea>
         </div>
-      </fieldset>
-    </form><!-- チャット入力画面ここまで -->
+        <img src="img/write.jpg" id="preview">
+        <input type="file" id="fish_img">
+        <button type="button" id="send">send</button>
+        
+      </div>
+    </div><!-- チャット入力画面ここまで -->
     
     <!-- canvas入力画面 -->
     <div id="canvas_section">
@@ -86,7 +93,7 @@
     </div><!-- canvas入力画面ここまで -->
     
     <!-- チャットデータ出力場所 -->
-    <ul id="output"></ul>
+    <div id="output"></div>
 
   <!-- jquery読み込み -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -104,12 +111,20 @@
       return `${Y}/${m}/${d} ${H}:${i}:${s}`;
     } 
 
+    //現在時間を取得する関数
+    function timelog () {
+      const now = new Date();//現在時間を取得
+      const now2 = now.getTime();//ミリ秒で取得
+      return now2;//数値を返す
+    }
+
     // 画面の初期設定
-    $('#login_section').hide();//ログイン入力フォームを消す
+    //$('#login_section').hide();//ログイン入力フォームを消す
     $('#signin_section').hide();//新規登録入力フォームを消す
-    $('#header_section').hide();//ヘッダー部分消す
-    $('#chat_section').hide();//チャット入力消す
+    //$('#header_section').hide();//ヘッダー部分消す
+    //$('#chat_section').hide();//チャット入力消す
     $('#canvas_section').hide();//canvas入力消す
+    $('#top_section').hide();
 
     //トップ画面のログインが押されたら
     $('#top_login').on('click',function(){
@@ -130,6 +145,24 @@
       $('#signin_close').on('click', function () {
         $('#signin_section').hide();//新規登録入力フォームを消す
       });
+
+    //プロフィール写真が選択されたらプレビューを表示
+      $('#user_img').on('change', function (e) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $("#sel_img").attr('src', e.target.result);
+          }
+          reader.readAsDataURL(e.target.files[0]);
+        });
+
+    //魚写真が選択されたらプレビューを表示
+      $('#fish_img').on('change', function (e) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            $("#preview").attr('src', e.target.result);
+          }
+          reader.readAsDataURL(e.target.files[0]);
+        });
 
 
   </script>
@@ -334,20 +367,50 @@
 
 
     //入力されたテキストデータを送信する関数
-    function sendChatTextDate() {
+    function sendFishDate() {
+      
+      const nowTime = timelog();//関数timelogで現在時間を取得
+      console.log(nowTime);
+      //ユーザー情報を取得する関数
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          const uid = user.uid;//uidを取得
+          console.log(uid);
+          
+          const file = $('#fish_img')[0].files[0]; //選択された画像ファイルを変数fileに代入
+          if (!file) { //もしファイルがなければ、
+            alert('ファイルが設定されていません');//アラートを出す
+          }
+        //変数fish_picに保存場所を指定
+        const fish_pic = ref(storage, `user/${uid}/${nowTime}.jpg`);//ファイルのパスにuidとnowTimeをつける
+        uploadBytes(fish_pic, file).then((snapshot) => { //登録処理実行
+            console.log('Uploaded a blob or file!'); //アップロード成功！
+          });
+
         const data = {//データ送信用の変数
-          name: $("#name").val(),//name欄に入力されたもの
-          text: $("#text").val(),//text欄に入力されたもの
-          img:"",
-          time: serverTimestamp(),//現在時間
-        };
-        addDoc(collection(db, "chat"), data);//Firebaseのchatコレクションにデータを送る
-        $("#text").val("");//text欄は空欄に
-      }
+            name: $("#fish_name").val(),//name欄に入力されたもの
+            info: $("#info").val(),//text欄に入力されたもの
+            map: "",
+            img: `user/${uid}/${nowTime}.jpg`,//登録した画像のパスを登録
+            time: serverTimestamp(),//現在時間
+          };
+        addDoc(collection(db, "fish"), data);//Firebaseのchatコレクションにデータを送る
+          $("#fish_name").val("");//name欄は空欄に
+          $("#info").val("");//info欄は空欄に
+          $("#fish_img").val("");//fish_img欄は空欄に
+          $("#preview").attr('src','./img/write.jpg');//preview欄は空欄に
+          
+        } // if trueここまで
+      }); //ここまでonAuthStateChanged
+      
+    } //sendFishDate関数ここまで
+      
+
+        
   //sendボタンが押されたら
     $('#send').on('click', function () { //sendボタンが押されたら発動
       //console.log('click');//コンソールにクリックと表示
-      sendChatTextDate();//テキストデータを送信する関数を実行
+      sendFishDate();//テキストデータを送信する関数を実行
     });
 
   //キーが押されたら
@@ -398,7 +461,7 @@
     // });//onSnapshotここまで
 
   </script>
-
+  
   <script src="./js/main.js"></script>
 </body>
 </html>

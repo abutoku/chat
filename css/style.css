@@ -1,6 +1,8 @@
+
 * {
       box-sizing: border-box;
 }
+
 /* トップ画面 */
 #top_section {
       width: 100%;
@@ -16,7 +18,7 @@
 #top_section h1{
       color:#fff;
       font-size: 80px;
-      color:#fff;
+      
 }
 
 #top_login,
@@ -52,13 +54,26 @@
       margin: 30px auto;
 }
 
+/* 新規登録画面 */
+#sel_img {
+      width: 100px;
+      height: 100px;
+      object-fit: scale-down;
+}
+
+/* ログイン後の画面 */
 #display_img {
       width: 30px;
       min-height: 30px;
       border-radius: 50%;
 }
 
-
+#preview {
+      width: 200px;
+      height: 150px;
+      object-fit: scale-down;
+      border: 1px dotted gray;
+}
 
 
 
