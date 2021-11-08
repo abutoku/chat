@@ -5,54 +5,67 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <link rel="stylesheet" href="./css/reset.css">
   <link rel="stylesheet" href="./css/style.css">
   
   <title>chat</title>
 </head>
 <body>
-  <h1>DIVER'S LOG</h1>
-  <h2>ユーザー:<span id="login_user"></span></h2>
 
-  <div id="form_section">
-
-    <form>
-      <fieldset>
-        <legend>新規登録画面</legend>
-        <div>email: <input type="email" id="new_email" /></div>
-        <div>password: <input type="password" id="new_password" /></div>
-        <div>
-          <button type="button" id="signin_btn">signin</button>
-        </div>
-      </fieldset>
-    </form>
-
-    <form>
-      <fieldset>
-        <legend>ログイン画面</legend>
-        <div>email: <input type="email" id="login_email" /></div>
-        <div>password: <input type="password" id="login_password" /></div>
-        <div>
-          <button type="button" id="login_btn">login</button>
-          <button type="button" id="logout_btn">logout</button>
-        </div>
-      </fieldset>
-    </form>
-
-    <div>
-      <fieldset>
-        <legend>ユーザー情報登録</legend>
-        <div>name: <input type="text" id="user_name" /></div>
-        <div>image: <input type="file" id="user_img" accept=".png, .jpeg, .jpg" required/></div>
-        <button id ="upload">upload</button>
-        <img src="https://via.placeholder.com/150" id="sel_img">
-        <div>
-          <button type="button" id="set_btn">set</button>
-          
-        </div>
-      </fieldset>
+  <!-- モーダル部分 -->
+  <!-- ログイン画面 -->
+  <div id="login_section" class="modal">
+    <div id="login_inner">
+      <h2>ログイン画面</h2>
+      <div>メールアドレス: <input type="email" id="login_email" /></div>
+      <div>パスワード: <input type="password" id="login_password" /></div>
+      <div>
+        <button type="button" id="login_btn">ログイン</button>
+        <button type="button" id="login_close">close</button>
+      </div>
     </div>
+  </div><!-- ログイン画面ここまで -->
 
-    <form>
+  <!-- 新規登録画面 -->
+  <div id="signin_section" class="modal">
+    <div id="signin_inner">
+      <h2>ユーザー情報登録</h2>
+      <div>ユーザー名: <input type="text" id="new_name" /></div>
+      <div>メールアドレス: <input type="email" id="new_email" /></div>
+      <div>パスワード: <input type="password" id="new_password" /></div>
+      <div>プロフィール画像: <input type="file" id="user_img" accept=".png, .jpeg, .jpg" required /></div>
+      <img src="https://via.placeholder.com/150" id="sel_img">
+      <div>
+        <button type="button" id="signin_btn">登録</button>
+        <button type="button" id="signin_close">close</button>
+      </div>
+    </div>    
+  </div><!-- 新規登録画面ここまで -->
+  
+  <!-- トップ画面 -->
+  <section id=top_section>
+    <!-- 最初の画面 -->
+    <h1>DIVER'S LOG</h1>
+    <div id ="toppage_btn">
+      <div id="top_login">ログイン</div>
+      <div id="top_signin">新規登録</div>
+    </div>    
+  </section><!-- トップ画面ここまで -->
+
+  <!-- ログイン後の画面 -->
+  <main>
+    <section id="header_section">
+      <header>
+        <h1>DIVER'S LOG</h1><!--タイトル-->
+        <h2 id="login_user"></h2> <!--ログインしたユーザー名が表示される場所-->
+        <img id="display_img"> <!--ログインしたユーザーのプロフィール写真が表示される場所-->
+        <button type="button" id="logout_btn">logout</button> <!--ログアウトボタン-->
+      </header>
+    </section>
+  </main>
+    
+    <!-- チャット入力画面 -->
+    <form id ="chat_section">
       <fieldset>
         <legend>チャット入力画面</legend>
         <div>name: <input type="text" id="name" /></div>
@@ -61,21 +74,19 @@
           <button type="button" id="send">send</button>
         </div>
       </fieldset>
-    </form>
-
-  </div>
-
-  <div id="canvas_section">
-    色選択<input type="color" id="color">
-    ペンの太さ<input type="range" id="line" min="1" max="50" value="5" step="1">
-    <button id="clear_btn">クリア</button>
-    <button id="image_send">送信</button><br>
-    <canvas id="canvas" width="600" height="400" style="border:1px solid #000;"></canvas>
-  </div>
-  
-  <!-- データ出力場所 -->
-  <ul id="output"></ul>
-
+    </form><!-- チャット入力画面ここまで -->
+    
+    <!-- canvas入力画面 -->
+    <div id="canvas_section">
+      色選択<input type="color" id="color">
+      ペンの太さ<input type="range" id="line" min="1" max="50" value="5" step="1">
+      <button id="clear_btn">クリア</button>
+      <button id="image_send">送信</button><br>
+      <canvas id="canvas" width="600" height="400" style="border:1px solid #000;"></canvas>
+    </div><!-- canvas入力画面ここまで -->
+    
+    <!-- チャットデータ出力場所 -->
+    <ul id="output"></ul>
 
   <!-- jquery読み込み -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -91,9 +102,38 @@
       const i = _d.getMinutes().toString().padStart(2, '0');
       const s = _d.getSeconds().toString().padStart(2, '0');
       return `${Y}/${m}/${d} ${H}:${i}:${s}`;
-    }
-    
+    } 
+
+    // 画面の初期設定
+    $('#login_section').hide();//ログイン入力フォームを消す
+    $('#signin_section').hide();//新規登録入力フォームを消す
+    $('#header_section').hide();//ヘッダー部分消す
+    $('#chat_section').hide();//チャット入力消す
+    $('#canvas_section').hide();//canvas入力消す
+
+    //トップ画面のログインが押されたら
+    $('#top_login').on('click',function(){
+      $('#login_section').show();//ログイン入力フォームを出す
+    });
+
+    //ログイン画面のcloseが押されたら
+    $('#login_close').on('click', function () {
+        $('#login_section').hide();//ログイン入力フォームを消す
+      });
+
+    //トップ画面の新規登録が押されたら
+      $('#top_signin').on('click', function () {
+        $('#signin_section').show();//新規登録入力フォームを出す
+    });
+
+    //ログイン画面のcloseが押されたら
+      $('#signin_close').on('click', function () {
+        $('#signin_section').hide();//新規登録入力フォームを消す
+      });
+
+
   </script>
+
   <!-- firebaseのいろいろ読み込み -->
   <script type ="module">//バージョンを合わせる！
   
@@ -111,7 +151,7 @@
       
     } from "https://www.gstatic.com/firebasejs/9.2.0/firebase-auth.js";
   
-  //Firebaceの関数を利用するためのコード
+  //Firestoneを利用するためのコード
   import {
       getFirestore,
       collection,
@@ -130,34 +170,36 @@
       getStorage,
       ref,
       uploadBytes,
+      getDownloadURL,
     } from "https://www.gstatic.com/firebasejs/9.2.0/firebase-storage.js";
 
 
-//自分のプロダクトを特定するためのコード
+// API key 自分のプロダクトを特定するためのコード
     const firebaseConfig = {
       
     };
     
-    //Firebaceを利用するためのコード
-    const app = initializeApp(firebaseConfig);    
-    //datebaceを利用するためのコード
+    //Firebaceを利用するための変数
+    const app = initializeApp(firebaseConfig);
+    //firestoreを利用するための変数
     const db = getFirestore(app);
-    //authenticationを利用するためのコード
+    //authenticationを利用するため変数
     const auth = getAuth(app);
-    //ログインしているユーザー確認
-    const user = auth.currentUser;
-
+    //storageを利用するための変数
     const storage = getStorage(app);
     //const storage2 = getStorage(customApp, "gs://my-custom-bucket");
 
-
+    //ログインしているユーザー確認
+    const user = auth.currentUser;
     //データを持ってくるときに時間の降順に並び替えるためのコード
     const q = query(collection(db, "chat"), orderBy("time", "desc"));
 
 //-------------ユーザーのログイン状態を確認する-------------------------------/////
     //ログインしていないときはuserにnullを返す
     if (user) {
-      //       
+      //  const uid = user.uid;
+      console.log(uid);
+      $('#login_user').text(uid);     
       } else {
         // No user is signed in.
         //ログインしていないときはuserにnullを返す
@@ -169,71 +211,56 @@
 //------------ユーザー新規登録-----------------------------------------------//////
 
     $('#signin_btn').on('click',function(){ //signinボタンを押したら発動
+
+      const name = $('#new_name').val();//new_nameの入力値を変数nameへ代入
       const email = $('#new_email').val(); //new_emailの入力値を変数emailへ代入
       const password = $('#new_password').val(); //new_passwordの入力値を変数passwordへ代入
+      const file = $('#user_img')[0].files[0]; //選択された画像ファイルを変数fileに代入
+      if (!file) { //もしファイルがなければ、
+        alert('ファイルが設定されていません');//アラートを出す
+      }
 
       createUserWithEmailAndPassword(auth, email, password)//ユーザ登録を実行
           .then((userCredential) => { //成功したら
             // Signed in
-            const user = userCredential.user;
-            console.log('created'); //コンソールにcreated
-            alert('登録完了しました');//アラートを出す
-            $('#new_email').val();//new_emailの入力欄を空に
-            $('#new_password').val(); //new_passwordの入力欄を空に
+            console.log('created!'); //コンソールにcreated!
+            alert('登録が完了しました');//アラートを出す
+            const user = userCredential.user; //変数userにuser情報取得
+            const uid = user.uid; //変数uidにuidを代入
+            console.log(user);
+            //プロフィール画像をstorageに登録
+            const profile_pic = ref(storage, `user/${uid}/profile.jpg`);//変数profile_picに保存場所を指定
+            uploadBytes(profile_pic, file).then((snapshot) => { //登録処理実行
+              console.log('Uploaded a blob or file!'); //アップロード成功！
+            });
+            //ユーザープロフィール設定
+            updateProfile(auth.currentUser, {
+                displayName: name, photoURL: `user/${uid}/profile.jpg`//変数nameをdisplayNameに指定、photoURLを指定
+              }).then(() => { //登録完了したら
+                // Profile updated!
+                console.log('sucsees');//sucsees!
+              }).catch((error) => { //登録失敗したら
+                // An error occurred
+                console.log(error);//コンソールにエラーを出す
+              });//ユーザープロフィール設定ここまで
+
+              $('#signin_section').hide();//新規登録入力フォームを消す
+              $('#login_section').show();//ログイン入力フォームを出す
 
             
-            // ...
-          })
-          .catch((error) => { //失敗したら
+            })//.then ユーザ登録成功したらの処理ここまで
+          .catch((error) => { //ユーザー登録に失敗したら
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(error.code + error.message);//コンソールにエラーを出す
-            // ..
-          });
+            // 
+          });//ユーザー登録に失敗したらの処理ここまで
     });//signinボタンを押したら発動ここまで
 
-    //---------------------作成中---------------------------------------------//
-
-    //ユーザー情報登録
-
-    // $('#set_btn').on('click', function () {
-    //     console.log('click');
-    //     const name = $('#user_name').val();
-    //     const img = $('#user_img').val();
-
-    //     console.log(name);
-    //     console.log(img);
-    //     updateProfile(auth.currentUser, {
-    //       displayName: name, photoURL: img
-    //     }).then(() => {
-    //       // Profile updated!
-    //       // ...
-    //       console.log('sucsees');
-    //     }).catch((error) => {
-    //       // An error occurred
-    //       // 
-    //       console.log(error);
-    //     });
+//---------------------作成中---------------------------------------------//
 
 
-//})
-
-//アップロードのボタンイベント
-$('#upload').on('click',function(){
-  const file = $('#user_img')[0].files[0];
-  if (!file) {
-    alert('ファイルが設定されていません');
-  }
-  
-  const user_pic = ref(storage, 'user/users.jpg');
-  uploadBytes(user_pic, file).then((snapshot) => {
-    console.log('Uploaded a blob or file!');
-  });
-
-
-});
-
-//---------ログイン-------------------------------------------------------------////
+//---------------ログイン処理--------------------------------------------------------////
 
     $('#login_btn').on('click',function(){ //logininボタンを押したら発動
       const email = $('#login_email').val(); //login_emailの入力値を変数emailへ代入
@@ -241,36 +268,48 @@ $('#upload').on('click',function(){
 
       signInWithEmailAndPassword(auth, email, password) //ログイン処理を実行
           .then((userCredential) => { //成功したら
-            // Signed in
+            // Signed in!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             const user = userCredential.user;
             console.log('login'); //コンソールにlogin！
-            alert('ログインしました');//アラートを出す
-            $('#login_email').val();//login_emailの入力欄を空に
-            $('#login_password').val();//login_passwordの入力欄を空に
+            alert('ログインしました'); //アラートを出す
 
+            $('#login_section').hide(); //ログイン入力フォームを消す
+            $('#top_section').hide(); //トップ画面消す
+
+            $('#header_section').show(); //メインヘッダーを出す
+            $('#chat_section').show(); //チャット入力を出す
+            //ユーザー情報を取得
             onAuthStateChanged(auth, (user) => {
-              if (user) {
-                // User is signed in, see docs for a list of available properties
-                // https://firebase.google.com/docs/reference/js/firebase.User
-                const uid = user.uid;
-                console.log(uid);
-                $('#login_user').text(uid);
-                // ...
-              } else {
+              if (user) { //成功したらログインしているユーザー情報を返す
+                const displayName = user.displayName; //ユーザの表示名を取得
+                $('#login_user').html(`こんにちは、${displayName}さん`); //ヘッダーにユーザの表示名を取得
+                console.log(user.photoURL); //プロフィール写真のパスを確認
+                getDownloadURL(ref(storage, `${user.photoURL}`))//プロフィール写真のパスからurlを取得
+                  .then((url) => {
+                    console.log(url); //プロフィール写真のurlを確認
+                    // Or inserted into an <img> element                   
+                    const img = document.getElementById('display_img');//プロフィール写真の表示場所を変数で指定
+                    img.setAttribute('src', url);//プロフィール写真の表示場所のsrc属性にurlを指定
+                    
+                  })
+                  .catch((error) => {//失敗したら
+                    // Handle any errors
+                    console.log(error);//コンソールにエラーを出す
+                  });
+
+                //
+              } else {//ユーザ見つからない場合は何もしない
                 // User is signed out
-                // ...
               }
-            });//onAuthStateChangedここまで
+            });////ユーザー情報を取得 onAuthStateChangedここまで
 
-            })
+            })//ログイン処理成功したらここまで
 
-            // ...
-          
           .catch((error) => { //失敗したら
             const errorCode = error.code;
             const errorMessage = error.message;
             console.log(error.code + error.message);//コンソールにエラーを出す  
-          })
+          })//ログイン失敗したらここまで
 
           });//logininボタンを押したら発動ここまで
 
@@ -280,21 +319,15 @@ $('#upload').on('click',function(){
           // Sign-out successful.
           console.log('logout');
           alert("ログアウトしました");
-          //ユーザのログイン状態を確認
-          //ログインしていないときはuserにnullを返す
-            if (user) {
-              //       
-              } else {
-                // No user is signed in.
-                //ログインしていないときはuserにnullを返す
-                console.log(user);
-                $('#login_user').text('null');
-            }
+          $('#top_section').show(); //トップ画面出す
+          $('#header_section').hide();//ヘッダー部分消す
+          $('#chat_section').hide();//チャット入力消す
 
         }).catch((error) => { //失敗したら
           // An error happened.
           console.log(error); //コンソールにエラーを出す
-        });        
+        });
+
     }); //logoutボタンが押されたらここまで
 
 
@@ -324,135 +357,48 @@ $('#upload').on('click',function(){
       }
     });
 
-    //チャットデータ読み込み
-    onSnapshot(q, (querySnapshot) => {
-      //データの変更が発生したタイミングで発動(読み込んだときも発動)
-      //console.log(querySnapshot.docs);//取ってきたデータをコンソールに出す（情報たくさん）
+    // //チャットデータ読み込み
+    // onSnapshot(q, (querySnapshot) => {
+    //   //データの変更が発生したタイミングで発動(読み込んだときも発動)
+    //   //console.log(querySnapshot.docs);//取ってきたデータをコンソールに出す（情報たくさん）
 
-      const dataArray = [];//必要なデータだけを入れるための配列を準備
-      //docs（情報たくさん）に対して繰り返し処理
-      querySnapshot.docs.forEach(function (doc) {
-      //docに入れて必要なデータを取る
-        const data = {
-          id: doc.id,//idを取る（自動生成されるやつ）
-          data: doc.data(),//dataを取る（ボタンを押してサーバーに保存したやつ）
-        };
+    //   const dataArray = [];//必要なデータだけを入れるための配列を準備
+    //   //docs（情報たくさん）に対して繰り返し処理
+    //   querySnapshot.docs.forEach(function (doc) {
+    //   //docに入れて必要なデータを取る
+    //     const data = {
+    //       id: doc.id,//idを取る（自動生成されるやつ）
+    //       data: doc.data(),//dataを取る（ボタンを押してサーバーに保存したやつ）
+    //     };
 
-        dataArray.push(data); //オブジェクトにして配列にいれる
-      });
+    //     dataArray.push(data); //オブジェクトにして配列にいれる
+    //   });
 
-      //必要なものだけ入れたオブジェクトができた！(dateArray)
-      console.log(dataArray);//コンソールに出す
-      //表示するためにhtmlコードにしよう！
-      const tagArray = [];//htmlタグをつけるための配列を準備
+    //   //必要なものだけ入れたオブジェクトができた！(dateArray)
+    //   console.log(dataArray);//コンソールに出す
+    //   //表示するためにhtmlコードにしよう！
+    //   const tagArray = [];//htmlタグをつけるための配列を準備
 
-      //dataをいれた配列に対して繰り返し処理
-      dataArray.forEach(function (data) {
-      //dateArrayに入れてタグを付けたものをtagArrayに入れる！
-      //console.log(convertFromFirestoreTimestampToDatetime(data.data.time.seconds));
-      tagArray.push(`
-        <li id="${data.id}">
-          <p>${data.data.name} at ${convertFromFirestoreTimestampToDatetime(data.data.time.seconds)}</p>
-          <p>${data.data.text}</p>
-          <img src =${data.data.img}>         
-          <button class="close">削除</button>
-        </li>
-      `);
-        });//dataArray.forEachここまで
+    //   //dataをいれた配列に対して繰り返し処理
+    //   dataArray.forEach(function (data) {
+    //   //dateArrayに入れてタグを付けたものをtagArrayに入れる！
+    //   //console.log(convertFromFirestoreTimestampToDatetime(data.data.time.seconds));
+    //   tagArray.push(`
+    //     <li id="${data.id}">
+    //       <p>${data.data.name} at ${convertFromFirestoreTimestampToDatetime(data.data.time.seconds)}</p>
+    //       <p>${data.data.text}</p>
+    //       <img src =${data.data.img}>         
+    //       <button class="close">削除</button>
+    //     </li>
+    //   `);
+    //     });//dataArray.forEachここまで
 
-      //タグを付けたものをhtml化する！
-      $("#output").html(tagArray);
-    });//onSnapshotここまで
+    //   //タグを付けたものをhtml化する！
+    //   $("#output").html(tagArray);
+    // });//onSnapshotここまで
 
-    
-    
+  </script>
 
-    //canvasについての記述
-
-    let canvas_mouse_event = false; //スイッチ[ true=線を引く、false=線は引かない]
-      let oldX = 0; //一つ前の座標を代入するための変数
-      let oldY = 0; //一つ前の座標を代入するための変数
-      let bold_line = 5; //ラインの太さをここで指定
-      let color = "#000"; //ラインの太さをここで指定
-
-      const can = $('#canvas')[0]; //キャンバスそのものを変数
-      const ctx = can.getContext("2d"); //canに対してgetContext関数を実行し書き込み権限を与える
-
-      $(can).on("mousedown", function (e) {
-        console.log('on');
-          oldX = e.offsetX; 
-          oldY = e.offsetY;
-          canvas_mouse_event = true;
-        });
-    
-
-        $(can).on("mousemove", function (e) {
-          
-        if (canvas_mouse_event === true) {
-
-              const px = e.offsetX;//時点の座標
-              const py = e.offsetY; //時点の座標
-              ctx.strokeStyle = color; //色
-              ctx.lineWidth = bold_line; //大きさ
-              ctx.lineJoin = "round";
-              ctx.lineCap = "round";//ペン先を丸く
-              ctx.beginPath();//パスの開始
-              ctx.moveTo(oldX, oldY);
-              ctx.lineTo(px, py);
-              ctx.stroke();//出発地点から現時点の線を描写
-              oldX = px; //出発地点の入れ替え
-              oldY = py; //出発地点の入れ替え
-            }
-          });
-
-          $(can).on("mouseup", function (e) {
-            canvas_mouse_event = false;//ボタンを上げたら
-          });
-
-          $(can).mouseleave(function () {
-              canvas_mouse_event = false;
-          });
-
-          $('#clear_btn').on("click", function () {
-            ctx.closePath();
-            ctx.clearRect(0, 0, can.width, can.height);//canvasをクリア
-          })
-
-
-          //パスの開始
-          ctx.beginPath();
-
-          //色変更
-          $('#color').on('change', function () {
-              let sel_color = $('#color').val();
-              console.log(sel_color);
-              color = sel_color;
-            })
-
-          //ラインを変更
-          $('#line').on('change', function () {
-              let line = $('#line').val();
-              console.log(line);
-              console.log('change');
-              bold_line = line;
-            })
-
-            //画像を送信
-            $('#image_send').on('click',function(){
-              console.log('click');
-              const img_data = canvas.toDataURL("image/jpg");
-              
-              const data = {//データ送信用の変数
-                name:"",
-                text:"",
-                img: img_data,//name欄に入力されたもの                
-                time: serverTimestamp(),//現在時間
-              };
-              addDoc(collection(db, "chat"), data);//Firebaseのchatコレクションにデータを送る
-              ctx.closePath();
-              ctx.clearRect(0, 0, can.width, can.height);
-            });
-    
-  </script>  
+  <script src="./js/main.js"></script>
 </body>
 </html>
