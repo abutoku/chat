@@ -7,6 +7,7 @@
 
   <link rel="stylesheet" href="./css/reset.css">
   <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
   
   <title>chat</title>
 </head>
@@ -14,38 +15,70 @@
 
   <!-- モーダル部分 -->
   <!-- ログイン画面 -->
-  <div id="login_section" class="modal">
+  <div id="login_section" class="modal">    
     <div id="login_inner">
-      <h2>ログイン画面</h2>
-      <div>メールアドレス: <input type="email" id="login_email" /></div>
-      <div>パスワード: <input type="password" id="login_password" /></div>
-      <div>
-        <button type="button" id="login_btn">ログイン</button>
-        <button type="button" id="login_close">close</button>
+      <!-- 閉じるボタン -->
+      <div class="modal_btn">
+        <div type="button" id="login_close" class="far fa-window-close modal_close"></div>
       </div>
+      <div id="login_main">
+        <h2>Login</h2>
+        <div>
+          <p>メールアドレス</p>
+          <input type="email" id="login_email" /></div>
+        <div>
+          <p>パスワード</p>
+          <input type="password" id="login_password" />
+        </div>
+        <div>
+          <div  id="login_btn">ログイン</div>
+        </div>
+      </div>
+
     </div>
   </div><!-- ログイン画面ここまで -->
 
   <!-- 新規登録画面 -->
   <div id="signin_section" class="modal">
     <div id="signin_inner">
-      <h2>ユーザー情報登録</h2>
-      <div>ユーザー名: <input type="text" id="new_name" /></div>
-      <div>メールアドレス: <input type="email" id="new_email" /></div>
-      <div>パスワード: <input type="password" id="new_password" /></div>
-      <div>プロフィール画像: <input type="file" id="user_img" accept=".png, .jpeg, .jpg" required /></div>
-      <img id="sel_img">
-      <div>
-        <button type="button" id="signin_btn">登録</button>
-        <button type="button" id="signin_close">close</button>
+
+      <div class="modal_btn">
+        <div type="button" id="signin_close" class="modal_close far fa-window-close"></div>
       </div>
+
+      <div id="signin_main">
+        <h2>アカウント登録</h2>
+        <div>
+          <p>ユーザー名</p>
+          <input type="text" class="input_txt" id="new_name"/>
+        </div>
+        
+        <div>
+          <p>メールアドレス</p>
+          <input type="email" class="input_txt" id="new_email" />
+        </div>
+
+        <div>
+          <p>パスワード</p>
+          <input type="password" class="input_txt" id="new_password" /></div>
+        <div>
+          <p>プロフィール画像</p>
+          <img id="sel_img">
+          <input type="file" id="user_img" accept=".png, .jpeg, .jpg" required />
+        </div>
+
+        <div>
+          <div id="signin_btn">登録</div>
+        </div>
+      </div>
+
     </div>    
   </div><!-- 新規登録画面ここまで -->
   
   <!-- トップ画面 -->
   <section id=top_section>
     <!-- 最初の画面 -->
-    <h1>DIVER'S Log</h1>
+    <h1>DIVER'S Note</h1>
     <div id ="toppage_btn">
       <div id="top_login">ログイン</div>
       <div id="top_signin">新規登録</div>
@@ -55,16 +88,16 @@
   <!-- ログイン後の画面 -->
   <main>
     <section id="header_section">
-      <header>
-        <h1>Diver's Log</h1><!--タイトル-->
+      
+        <h1>Diver's Note</h1><!--タイトル-->
         
         <div id ="user_info">
-          <img id="display_img"> <!--ログインしたユーザーのプロフィール写真が表示される場所-->
           <h2 id="login_user"></h2> <!--ログインしたユーザー名が表示される場所-->
-          <button type="button" id="logout_btn">logout</button> <!--ログアウトボタン-->
+          <img id="display_img"> <!--ログインしたユーザーのプロフィール写真が表示される場所-->
+          <div type="button" id="logout_btn">ログアウト</div> <!--ログアウトボタン-->
         </div>
 
-      </header>
+      
     </section>
   </main>
     
@@ -95,6 +128,7 @@
     <!-- チャットデータ出力場所 -->
     <div id="output"></div>
 
+
   <!-- jquery読み込み -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
@@ -119,12 +153,12 @@
     }
 
     // 画面の初期設定
-    //$('#login_section').hide();//ログイン入力フォームを消す
+    $('#login_section').hide();//ログイン入力フォームを消す
     $('#signin_section').hide();//新規登録入力フォームを消す
-    //$('#header_section').hide();//ヘッダー部分消す
-    //$('#chat_section').hide();//チャット入力消す
+    $('#header_section').hide();//ヘッダー部分消す
+    $('#chat_section').hide();//チャット入力消す
     $('#canvas_section').hide();//canvas入力消す
-    $('#top_section').hide();
+    //$('#top_section').hide();
 
     //トップ画面のログインが押されたら
     $('#top_login').on('click',function(){
@@ -225,7 +259,8 @@
     //ログインしているユーザー確認
     const user = auth.currentUser;
     //データを持ってくるときに時間の降順に並び替えるためのコード
-    const q = query(collection(db, "chat"), orderBy("time", "desc"));
+    const q = query(collection(db, "fish"), orderBy("time", "desc"));
+
 
 //-------------ユーザーのログイン状態を確認する-------------------------------/////
     //ログインしていないときはuserにnullを返す
@@ -290,9 +325,6 @@
           });//ユーザー登録に失敗したらの処理ここまで
     });//signinボタンを押したら発動ここまで
 
-//---------------------作成中---------------------------------------------//
-
-
 //---------------ログイン処理--------------------------------------------------------////
 
     $('#login_btn').on('click',function(){ //logininボタンを押したら発動
@@ -316,10 +348,10 @@
               if (user) { //成功したらログインしているユーザー情報を返す
                 const displayName = user.displayName; //ユーザの表示名を取得
                 $('#login_user').html(`こんにちは、${displayName}さん`); //ヘッダーにユーザの表示名を取得
-                console.log(user.photoURL); //プロフィール写真のパスを確認
+                //console.log(user.photoURL); //プロフィール写真のパスを確認
                 getDownloadURL(ref(storage, `${user.photoURL}`))//プロフィール写真のパスからurlを取得
                   .then((url) => {
-                    console.log(url); //プロフィール写真のurlを確認
+                    //console.log(url); //プロフィール写真のurlを確認
                     // Or inserted into an <img> element                   
                     const img = document.getElementById('display_img');//プロフィール写真の表示場所を変数で指定
                     img.setAttribute('src', url);//プロフィール写真の表示場所のsrc属性にurlを指定
@@ -364,7 +396,7 @@
     }); //logoutボタンが押されたらここまで
 
 
-
+//---------------データ登録の処理-----------------------------------------------//
 
     //入力されたテキストデータを送信する関数
     function sendFishDate() {
@@ -391,7 +423,7 @@
             name: $("#fish_name").val(),//name欄に入力されたもの
             info: $("#info").val(),//text欄に入力されたもの
             map: "",
-            img: `user/${uid}/${nowTime}.jpg`,//登録した画像のパスを登録
+            img: `user/${uid}/${nowTime}.jpg`.jpg,//登録した画像のパスを登録
             time: serverTimestamp(),//現在時間
           };
         addDoc(collection(db, "fish"), data);//Firebaseのchatコレクションにデータを送る
@@ -416,49 +448,53 @@
   //キーが押されたら
     $("#text").on("keydown", function (e) { //キーが押されたら発動
       if (e.keyCode === 13) { //エンターキーだった場合は、
-        sendChatTextDate(); //テキストデータを送信する関数を実行
+        sendFishDate(); //テキストデータを送信する関数を実行
       }
     });
 
-    // //チャットデータ読み込み
-    // onSnapshot(q, (querySnapshot) => {
-    //   //データの変更が発生したタイミングで発動(読み込んだときも発動)
-    //   //console.log(querySnapshot.docs);//取ってきたデータをコンソールに出す（情報たくさん）
+    //---------データ読み込み部分---------------------------------------------//
 
-    //   const dataArray = [];//必要なデータだけを入れるための配列を準備
-    //   //docs（情報たくさん）に対して繰り返し処理
-    //   querySnapshot.docs.forEach(function (doc) {
-    //   //docに入れて必要なデータを取る
-    //     const data = {
-    //       id: doc.id,//idを取る（自動生成されるやつ）
-    //       data: doc.data(),//dataを取る（ボタンを押してサーバーに保存したやつ）
-    //     };
+    //チャットデータ読み込み
+    onSnapshot(q, (querySnapshot) => {
+    //データの変更が発生したタイミングで発動(読み込んだときも発動)
+    console.log(querySnapshot.docs);//取ってきたデータをコンソールに出す（情報たくさん）
 
-    //     dataArray.push(data); //オブジェクトにして配列にいれる
-    //   });
+    const dataArray = [];//必要なデータだけを入れるための配列を準備
 
-    //   //必要なものだけ入れたオブジェクトができた！(dateArray)
-    //   console.log(dataArray);//コンソールに出す
-    //   //表示するためにhtmlコードにしよう！
-    //   const tagArray = [];//htmlタグをつけるための配列を準備
+    //docs（情報たくさん）に対して繰り返し処理
+    querySnapshot.docs.forEach(function (doc) {
+    //docに入れて必要なデータを取る
+    const data = {
+    id: doc.id,//idを取る（自動生成されるやつ）
+    data: doc.data(),//dataを取る（ボタンを押してサーバーに保存したやつ）
+    };
 
-    //   //dataをいれた配列に対して繰り返し処理
-    //   dataArray.forEach(function (data) {
-    //   //dateArrayに入れてタグを付けたものをtagArrayに入れる！
-    //   //console.log(convertFromFirestoreTimestampToDatetime(data.data.time.seconds));
-    //   tagArray.push(`
-    //     <li id="${data.id}">
-    //       <p>${data.data.name} at ${convertFromFirestoreTimestampToDatetime(data.data.time.seconds)}</p>
-    //       <p>${data.data.text}</p>
-    //       <img src =${data.data.img}>         
-    //       <button class="close">削除</button>
-    //     </li>
-    //   `);
-    //     });//dataArray.forEachここまで
+    dataArray.push(data); //オブジェクトにして配列にいれる
+    });
 
-    //   //タグを付けたものをhtml化する！
-    //   $("#output").html(tagArray);
-    // });//onSnapshotここまで
+    //必要なものだけ入れたオブジェクトができた！(dateArray)
+    console.log(dataArray);//コンソールに出す
+    //表示するためにhtmlコードにしよう！
+    const tagArray = [];//htmlタグをつけるための配列を準備
+
+    
+
+    //dataをいれた配列に対して繰り返し処理
+    dataArray.forEach(function (data) {
+    //dateArrayに入れてタグを付けたものをtagArrayに入れる！
+        //console.log(convertFromFirestoreTimestampToDatetime(data.data.time.seconds));
+        tagArray.push(`
+            <div class="log_contents" id="${data.id}">
+              <p id="contents_title">${data.data.name}</p>      
+              <p>${convertFromFirestoreTimestampToDatetime(data.data.time.seconds)}</p>         
+            </div>
+          `);          
+        });//dataArray.forEachここまで
+
+    //タグを付けたものをhtml化する！
+    $("#output").html(tagArray);
+
+    });//onSnapshotここまで
 
   </script>
   

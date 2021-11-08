@@ -1,9 +1,14 @@
 
 * {
       box-sizing: border-box;
+      color: #636363;
 }
 
-/* トップ画面 */
+body {
+      background: #eeeeee;
+}
+
+/* -------トップ画面 ------------------*/
 #top_section {
       width: 100%;
       height: 800px;
@@ -30,15 +35,15 @@
       border-radius: 20px;
       background-color: rgba(0, 0,0, 0.5);
       color:#fff;
-}
-
-#top_login:hover,
-#top_signin:hover {
-      opacity: 0.8;
       cursor: pointer;
 }
 
-/* ログイン画面 */
+/* #top_login:hover,
+#top_signin:hover {
+      opacity: 0.8;
+} */
+
+/* ---------ログイン画面 新規登録画面 -----------------*/
 .modal {
       width: 100%;
       height:100%;
@@ -46,25 +51,113 @@
       background-color: rgba(0, 0,0, 0.6);
 }
 
-#login_inner,
-#signin_inner {
-      width:400px;
-      height: 500px;
-      background: #fff;
-      margin: 30px auto;
+.modal_btn {
+      display: flex;
+      justify-content: flex-end;
+      cursor: pointer;
 }
 
-/* 新規登録画面 */
+.modal_close {
+      font-size: 48px;
+}
+
+#login_inner {
+      width:500px;
+      height: 500px;
+      background: #fff;
+      margin: 100px auto;
+      color:#636363;
+}
+
+#signin_inner {
+      width:600px;
+      height: 560px;
+      background: #fff;
+      margin: 80px auto;
+      color:#636363;
+}
+
+#login_main,
+#signin_main {
+      text-align: center;
+}
+
+#login_main h2{
+      font-size: 56px;
+      margin-bottom: 40px;
+}
+
+#login_main input {
+      width: 300px;
+      height: 40px;
+      color: #636363;
+      font-size: 20px;
+}
+
+.input_txt{
+      width: 300px;
+      height: 40px;
+      color: #636363;
+      font-size: 20px;
+}
+
+
+#login_btn,
+#signin_btn {
+      margin: 48px auto;
+      width: 300px;
+      line-height: 56px;
+      background: #636363;
+      color:#fff;
+      cursor: pointer;
+      font-size: 20px;
+
+}
+
 #sel_img {
       width: 100px;
       height: 100px;
       object-fit: scale-down;
 }
 
-/* ログイン後の画面 */
+/* ------------ログイン後の画面 --------------------*/
+#header_section {
+      background-color: #636363;
+      color: #fff;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+}
+#header_section h1 {
+      color: #fff;
+      font-size: 32px;
+}
+
+#user_info {
+      display: flex;
+      align-items: center;
+}
+
+#header_section h2{
+      color: #fff;
+      font-size: 16px;
+}
+
+#logout_btn {
+      cursor: pointer;
+      font-size: 12px;
+      background:#fff;
+      height: 32px;
+      margin-left: 12px;
+      margin-top: 12px;
+      padding:8px;
+}
+
+
+
 #display_img {
-      width: 30px;
-      min-height: 30px;
+      width: 50px;
+      min-height: 50px;
       border-radius: 50%;
 }
 
