@@ -5,11 +5,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <link rel="shortcut icon" href="./img/favicon.ico">
   <link rel="stylesheet" href="./css/reset.css">
   <link rel="stylesheet" href="./css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
   
-  <title>chat</title>
+  <title>DIVER'S Note</title>
 </head>
 <body>
 
@@ -60,7 +61,8 @@
         
         <div>
           <p>パスワード</p>
-          <input type="password" class="input_txt" id="new_password" /></div>
+          <input type="password" class="input_txt" id="new_password" />
+        </div>
           <div>
             <p>プロフィール画像</p>
             <img id="sel_img">
@@ -72,7 +74,7 @@
           </div>
         </div>
         
-      </div>    
+      </div>
     </div><!-- 新規登録画面ここまで -->
     
     <!-- 記録が出る部分 -->
@@ -178,11 +180,12 @@
     // 画面の初期設定
     $('#login_section').hide();//ログイン入力フォームを消す
     $('#signin_section').hide();//新規登録入力フォームを消す
-    //$('#header_section').hide();//ヘッダー部分消す
-    //$('#chat_section').hide();//チャット入力消す
-    //$('#canvas_section').hide();//canvas入力消す
+    $('#header_section').hide();//ヘッダー部分消す
+    $('#chat_section').hide();//チャット入力消す
+    $('#canvas_section').hide();//canvas入力消す
     $('#output_modal').hide();//canvas入力消す
-    $('#top_section').hide();
+    $('#output').hide();//チャット部分消す
+    //$('#top_section').hide();
 
     //トップ画面のログインが押されたら
     $('#top_login').on('click',function(){
@@ -374,6 +377,8 @@
 
             $('#header_section').show(); //メインヘッダーを出す
             $('#chat_section').show(); //チャット入力を出す
+            $('#output').show();//チャット部分出す
+
             //ユーザー情報を取得
             onAuthStateChanged(auth, (user) => {
               if (user) { //成功したらログインしているユーザー情報を返す
@@ -418,6 +423,7 @@
           $('#top_section').show(); //トップ画面出す
           $('#header_section').hide();//ヘッダー部分消す
           $('#chat_section').hide();//チャット入力消す
+          $('#output').hide();//チャット部分消す
 
         }).catch((error) => { //失敗したら
           // An error happened.

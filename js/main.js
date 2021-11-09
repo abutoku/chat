@@ -83,3 +83,18 @@ $('#image_send').on('click', function () {
   ctx.closePath();
   ctx.clearRect(0, 0, can.width, can.height);
 });
+
+//ダブルクリックで◯をつける
+$(can).on("dblclick", function (e) {
+  console.log('click');
+
+  pointX = e.offsetX; //位置の横軸を変数に代入
+  pointY = e.offsetY; //位置の縦軸を変数に代入
+
+  ctx.beginPath();//パスの開始
+  ctx.fillStyle = "#ff0000";//色指定
+  //Rect(座標、半径、円のスタート度、エンド度（描画）、回転)
+  ctx.arc(pointX, pointY, 5, 0, Math.PI * 2, false);
+  ctx.stroke();//実際に書く関数(枠線)
+  ctx.fill(); //塗りつぶし
+});
